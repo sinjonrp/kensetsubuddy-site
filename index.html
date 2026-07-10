@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>けんせつバディ｜5年更新と毎年の決算変更届を、顧客横断で絶対に落とさない</title>
+<meta name="description" content="建設業許可を扱う行政書士のための業務アプリ「けんせつバディ」。許可更新（5年）と毎年の決算変更届の期限を顧客横断で一覧管理。登録不要・データは端末内のみ・オフライン対応・広告なし。iPhone対応、App Store近日公開。">
+<style>
+  /* ============ Reset ============ */
+  *, *::before, *::after { box-sizing: border-box; }
+  * { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  a { color: inherit; }
+
+  /* ============ Design tokens ============ */
+  :root {
+    --brand: #A9762C;
+    --brand-dark: #8A5F22;
+    --brand-light: #C79A54;
+    --accent: #2F6F52;
+    --accent-light: #4E8F70;
+    --bg: #F7F1E3;
+    --surface: #FFFFFF;
+    --border: #E3DAC9;
+    --text: #2B2318;
+    --text-muted: #6E6355;
+    --text-soft: #9C9080;
+    --footer-bg: #241C12;
+    --footer-text: #EFE3D3;
+    --footer-muted: #A8967E;
+    --focus: #8A5F22;
+    --warning: #E08E00;
+    --warning-bg: #FBEBD2;
+    --danger: #C0392B;
+    --danger-bg: #F8D9D4;
+    --font-heading: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+    color-scheme: light;
+  }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.85;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { color: var(--text); line-height: 1.5; font-weight: 800; font-family: var(--font-heading); text-wrap: balance; }
+  p, li { color: var(--text); }
+  [id] { scroll-margin-top: 84px; }
+  summary { list-style: none; cursor: pointer; }
+  summary::-webkit-details-marker { display: none; }
+
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .cta-disabled { cursor: default; }
+  .link-accent:hover { color: var(--brand); border-bottom-color: var(--brand-light); }
+  .footer-link:hover { color: #fff; border-bottom-color: #fff; }
+
+  @media (max-width: 600px) {
+    header nav { display: none !important; }
+  }
+
+  /* ============ Header ============ */
+  header.site-header {
+    position: sticky; top: 0; z-index: 60;
+    background: rgba(247, 241, 227, 0.9);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    max-width: 1120px; margin: 0 auto; padding: 0 clamp(18px, 5vw, 44px);
+    height: 64px; display: flex; align-items: center; gap: 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+  .brand-badge {
+    width: 36px; height: 36px; border-radius: 11px; background: var(--brand);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(169,118,44,0.32);
+  }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+  .brand-ja { font-family: var(--font-heading); font-weight: 800; font-size: 16.5px; }
+  .brand-en { font-size: 9.5px; letter-spacing: 0.16em; color: var(--text-soft); font-weight: 700; }
+  .site-nav { margin-left: auto; display: flex; align-items: center; gap: clamp(14px, 3vw, 28px); }
+  .site-nav a { font-size: 13.5px; font-weight: 700; color: var(--text-muted); text-decoration: none; }
+  .site-nav a:hover { color: var(--brand); }
+
+  /* ============ Shared layout ============ */
+  main { display: block; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 clamp(18px, 5vw, 44px); }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; color: var(--brand-dark);
+    font-weight: 800; font-size: 13px; letter-spacing: 0.14em;
+  }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 2.5px; background: var(--brand-dark); display: inline-block; }
+  .section-title { margin: 16px 0 0; font-size: clamp(24px, 4.4vw, 38px); line-height: 1.5; }
+  .section-lead { margin: 18px 0 0; font-size: 14.5px; line-height: 2.1; color: var(--text-muted); }
+
+  /* ============ Hero ============ */
+  #hero { position: relative; overflow: hidden; }
+  .hero-inner {
+    padding: clamp(44px, 8vw, 84px) 0 clamp(40px, 6vw, 72px);
+    display: flex; flex-wrap: wrap; align-items: center; gap: clamp(40px, 6vw, 72px);
+  }
+  .hero-copy { flex: 1 1 460px; min-width: 0; }
+  .hero-badge {
+    display: inline-flex; flex-wrap: wrap; align-items: center; gap: 9px;
+    background: #EFE6D3; border: 1px solid var(--border); color: var(--brand-dark);
+    border-radius: 18px; padding: 7px 16px; font-size: 12.5px; font-weight: 700; line-height: 1.6;
+  }
+  .hero-badge .pulse { width: 8px; height: 8px; border-radius: 999px; background: var(--brand-dark); display: inline-block; flex-shrink: 0; }
+  .hero-title { margin: 22px 0 0; font-size: clamp(28px, 5vw, 44px); line-height: 1.55; letter-spacing: 0.01em; }
+  .hero-title em { font-style: normal; color: var(--brand-dark); }
+  .hero-sub { margin: 22px 0 0; font-size: clamp(14px, 1.7vw, 15.5px); line-height: 2.15; color: var(--text-muted); max-width: 36em; }
+  .hero-actions { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 12px; background: var(--text); color: #fff;
+    text-decoration: none; border-radius: 16px; padding: 12px 24px 12px 18px;
+    box-shadow: 0 12px 26px rgba(43,33,28,0.22);
+  }
+  .cta-btn .cta-lines { display: flex; flex-direction: column; line-height: 1.25; text-align: left; }
+  .cta-btn .cta-small { font-size: 11px; color: rgba(255,255,255,0.72); letter-spacing: 0.05em; }
+  .cta-btn .cta-big { font-family: var(--font-heading); font-size: 17px; font-weight: 800; }
+  .hero-note { margin: 14px 0 0; font-size: 12.5px; color: var(--text-soft); }
+  .pill-row { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 9px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px; background: #fff; border: 1px solid var(--border);
+    border-radius: 999px; padding: 7px 13px; font-size: 12.5px; font-weight: 700; color: var(--text);
+  }
+  .pill svg circle { fill: var(--accent); }
+
+  /* phone mockup */
+  .hero-phone { flex: 1 1 320px; display: flex; justify-content: center; min-width: 0; }
+  .phone-frame { width: 300px; height: 626px; border-radius: 46px; overflow: hidden; position: relative;
+    background: #FBF8F1; box-shadow: 0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12); }
+  .phone-notch { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 116px; height: 32px; border-radius: 22px; background: #000; z-index: 50; }
+  .phone-status { position: absolute; top: 0; left: 0; right: 0; z-index: 10; display: flex; align-items: center; padding: 19px 22px 16px; font-weight: 700; font-size: 14px; color: #000; }
+  .phone-body { height: 100%; padding: 66px 15px 0; display: flex; flex-direction: column; gap: 11px; }
+  .phone-app-row { display: flex; align-items: center; gap: 9px; }
+  .phone-app-badge { width: 26px; height: 26px; border-radius: 8px; background: var(--brand); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .phone-app-name { font-family: var(--font-heading); font-weight: 800; font-size: 15.5px; }
+  .phone-headline { font-size: 11px; font-weight: 800; color: var(--brand-dark); letter-spacing: 0.06em; margin-top: 2px; }
+  .deadline-row { background: #fff; border: 1px solid var(--border); border-radius: 13px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--border); }
+  .deadline-row.is-warning { border-left-color: var(--warning); }
+  .deadline-row.is-danger { border-left-color: var(--danger); background: var(--danger-bg); }
+  .deadline-name { font-size: 11.5px; font-weight: 700; flex: 1; min-width: 0; }
+  .deadline-type { display: block; font-size: 9.5px; color: var(--text-soft); margin-top: 1px; }
+  .deadline-days { font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: var(--warning-bg); color: #8A5A00; white-space: nowrap; }
+  .deadline-row.is-danger .deadline-days { background: var(--danger); color: #fff; }
+  .deadline-row.is-normal .deadline-days { background: #EEF4F0; color: var(--accent); }
+  .phone-tabbar { margin-top: auto; background: #fff; border-top: 1px solid var(--border); display: flex; padding: 9px 6px 26px; }
+  .phone-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9px; font-weight: 700; color: var(--text-soft); }
+  .phone-tab.is-active { color: var(--brand-dark); }
+  .phone-home-indicator { position: absolute; bottom: 0; left: 0; right: 0; z-index: 60; height: 30px; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 7px; }
+  .phone-home-indicator span { width: 126px; height: 5px; border-radius: 100px; background: rgba(0,0,0,0.25); }
+
+  /* ============ Highlight (deadline dashboard) ============ */
+  #highlight { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .highlight-inner { padding: clamp(60px, 9vw, 100px) 0; text-align: center; }
+  .highlight-body { margin: 0 auto; }
+  .rule-table { margin: clamp(32px, 5vw, 48px) auto 0; max-width: 900px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; text-align: left; }
+  .rule-card { background: var(--bg); border: 1px solid var(--border); border-radius: 18px; padding: 20px 22px; }
+  .rule-card .rule-name { font-size: 13px; font-weight: 800; color: var(--brand-dark); }
+  .rule-card .rule-desc { margin-top: 8px; font-size: 13px; line-height: 1.9; color: var(--text-muted); }
+  .legend-row { margin-top: 24px; display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; font-size: 12.5px; color: var(--text-muted); }
+  .legend-row .swatch { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  /* ============ Features ============ */
+  .feature-grid { margin-top: clamp(32px, 5vw, 52px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 18px; align-items: stretch; }
+  .feature-card { background: #fff; border: 1px solid var(--border); border-radius: 22px; padding: clamp(22px, 3vw, 28px); display: flex; flex-direction: column; }
+  .feature-tab-badge { display: inline-flex; align-items: center; gap: 8px; }
+  .feature-tab-icon { width: 40px; height: 40px; border-radius: 12px; background: #EFE6D3; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .feature-tab-label { font-size: 12.5px; font-weight: 800; color: var(--brand-dark); letter-spacing: 0.08em; }
+  .feature-title { margin: 14px 0 0; font-size: 17px; font-weight: 800; line-height: 1.6; }
+  .feature-list { margin-top: 12px; display: flex; flex-direction: column; }
+  .feature-list-item { padding: 11px 0; border-top: 1px solid var(--border); }
+  .feature-list-item .fli-name { font-size: 13.5px; font-weight: 700; }
+  .feature-list-item .fli-desc { margin-top: 3px; font-size: 12.5px; line-height: 1.85; color: var(--text-muted); }
+
+  /* ============ Flow ============ */
+  #flow { background: var(--accent); position: relative; overflow: hidden; }
+  #flow .wrap { position: relative; }
+  #flow .section-title, #flow .eyebrow { color: #fff; }
+  #flow .eyebrow .dot { background: #E7C98D; }
+  #flow .eyebrow { color: #E7C98D; }
+  .flow-grid { margin-top: clamp(32px, 5vw, 52px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 18px; }
+  .flow-card { background: #fff; border-radius: 20px; padding: 26px 24px; }
+  .flow-num { font-family: var(--font-heading); font-weight: 900; font-size: 34px; color: var(--brand-dark); line-height: 1; }
+  .flow-step-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; color: var(--text-soft); margin-left: 8px; }
+  .flow-title { margin-top: 12px; font-size: 15.5px; font-weight: 800; line-height: 1.7; }
+  .flow-desc { margin: 8px 0 0; font-size: 13px; line-height: 2; color: var(--text-muted); }
+
+  /* ============ Trust badges ============ */
+  #trust { background: var(--surface); border-bottom: 1px solid var(--border); }
+  .trust-inner { padding: clamp(56px, 8vw, 88px) 0; }
+  .trust-grid { margin-top: clamp(28px, 4vw, 40px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
+  .trust-card { background: var(--bg); border: 1px solid var(--border); border-radius: 18px; padding: 20px 20px; display: flex; gap: 12px; align-items: flex-start; }
+  .trust-icon { width: 36px; height: 36px; border-radius: 10px; background: #fff; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .trust-title { font-size: 13.5px; font-weight: 800; }
+  .trust-desc { margin-top: 4px; font-size: 12.5px; line-height: 1.85; color: var(--text-muted); }
+
+  /* ============ FAQ ============ */
+  #faq { background: var(--bg); }
+  .faq-inner { padding: clamp(60px, 9vw, 96px) 0; max-width: 800px; margin: 0 auto; }
+  .faq-list { margin-top: clamp(26px, 4vw, 36px); display: flex; flex-direction: column; gap: 12px; }
+  .faq-item { background: #fff; border: 1px solid var(--border); border-radius: 16px; }
+  .faq-item summary { display: flex; align-items: center; gap: 14px; padding: 16px 18px; }
+  .faq-q { font-family: var(--font-heading); font-weight: 800; color: var(--brand-dark); font-size: 16px; flex-shrink: 0; }
+  .faq-text { flex: 1; font-size: 14.5px; font-weight: 700; line-height: 1.7; }
+  .faq-chev { flex-shrink: 0; color: var(--text-soft); font-size: 0.85rem; transition: transform 0.25s; }
+  .faq-item[open] .faq-chev { transform: rotate(180deg); }
+  .faq-a { padding: 0 18px 18px 48px; font-size: 13.5px; line-height: 2; color: var(--text-muted); }
+
+  /* ============ Download ============ */
+  #download { padding: 0 0 clamp(72px, 9vw, 108px); }
+  .download-card {
+    background: var(--brand); border-radius: 32px; padding: clamp(44px, 7vw, 76px) clamp(24px, 5vw, 64px);
+    text-align: center; position: relative; overflow: hidden; box-shadow: 0 24px 56px rgba(169,118,44,0.32);
+  }
+  .download-card h2 { color: #fff; }
+  .download-card p { margin: 16px auto 0; font-size: 14.5px; line-height: 2.1; color: #F3E4C8; max-width: 33em; }
+  .download-cta { margin-top: 28px; display: flex; justify-content: center; }
+  .download-pill-row { margin-top: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .download-pill { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.32); color: #fff; border-radius: 999px; padding: 6px 13px; font-size: 12px; font-weight: 700; }
+  .download-fine { margin: 20px 0 0; font-size: 11.5px; color: #EED9AF; }
+
+  /* ============ Footer ============ */
+  footer.site-footer { background: var(--footer-bg); color: var(--footer-text); }
+  .footer-inner { max-width: 1120px; margin: 0 auto; padding: clamp(48px, 7vw, 72px) clamp(18px, 5vw, 44px) 36px; }
+  .footer-top { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; justify-content: space-between; }
+  .footer-brand-row { display: flex; align-items: center; gap: 10px; }
+  .footer-badge { width: 32px; height: 32px; border-radius: 10px; background: var(--brand); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .footer-ja { font-family: var(--font-heading); font-weight: 800; font-size: 16.5px; color: #fff; }
+  .footer-tagline { margin: 12px 0 0; font-size: 13px; color: var(--footer-muted); }
+  .footer-links { display: flex; gap: 22px; padding-top: 6px; flex-wrap: wrap; }
+  .footer-links a { font-size: 13.5px; color: #E4D4B9; text-decoration: none; border-bottom: 1px solid rgba(228,212,185,0.35); padding-bottom: 2px; }
+  .footer-disclaimer { margin-top: 32px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 18px 20px; }
+  .footer-disclaimer .fd-title { font-size: 12px; font-weight: 800; color: #D8C2A0; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .footer-disclaimer p { margin: 0 0 8px; font-size: 12px; line-height: 2; color: var(--footer-muted); }
+  .footer-disclaimer p:last-child { margin-bottom: 0; }
+  .footer-bottom { margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; font-size: 12px; color: var(--footer-muted); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="helmet-mark" viewBox="0 0 24 24">
+    <path d="M4 15.4C4 10.8 7.6 7 12 7s8 3.8 8 8.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <rect x="2.2" y="15" width="19.6" height="2.6" rx="1.3" fill="#fff"/>
+    <rect x="11" y="4.6" width="2" height="4.4" rx="1" fill="#fff"/>
+  </symbol>
+</svg>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="#hero">
+      <span class="brand-badge"><svg width="19" height="19"><use href="#helmet-mark"/></svg></span>
+      <span class="brand-text">
+        <span class="brand-ja">けんせつバディ</span>
+        <span class="brand-en">KENSETSU BUDDY</span>
+      </span>
+    </a>
+    <nav class="site-nav">
+      <a href="#highlight">期限ダッシュボード</a>
+      <a href="#features">機能一覧</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section id="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <div class="hero-badge">
+          <span class="pulse"></span>
+          <span>iOS版 準備中<span style="font-weight:500;color:#7A6A4E">・建設業許可を扱う行政書士のための業務アプリ</span></span>
+        </div>
+
+        <h1 class="hero-title">5年更新と毎年の決算変更届を、<br>顧客横断で<em>絶対に落とさない。</em></h1>
+
+        <p class="hero-sub">けんせつバディは、建設業許可を扱う行政書士のための業務ツールです。顧客ごとに許可日と決算日を登録するだけで、許可更新と決算変更届の期限を全顧客横断・残日数の昇順で一覧できます。顧客配布用ではなく、先生ご自身が事務所で使うためのアプリです。</p>
+
+        <div class="hero-actions">
+          <span class="cta-btn cta-disabled" role="img" aria-label="App Store 近日公開">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3.5v11M12 14.5l-4.5-4.5M12 14.5l4.5-4.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 17v2.5h15V17" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="cta-lines">
+              <span class="cta-small">App Storeで</span>
+              <span class="cta-big">近日公開</span>
+            </span>
+          </span>
+          <a href="#highlight" class="link-accent" style="font-size:14px;font-weight:700;color:var(--accent);text-decoration:none;border-bottom:2px solid #CFE1D6;padding-bottom:2px">目玉機能を見る ↓</a>
+        </div>
+        <p class="hero-note">登録不要。iPhone対応。公開まで、いましばらくお待ちください。</p>
+
+        <div class="pill-row">
+          <span class="pill"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9"/><path d="M6.2 10.3l2.5 2.5 5.1-5.4" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>登録不要</span>
+          <span class="pill"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9"/><path d="M6.2 10.3l2.5 2.5 5.1-5.4" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>データは端末内のみ</span>
+          <span class="pill"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9"/><path d="M6.2 10.3l2.5 2.5 5.1-5.4" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>オフライン対応</span>
+          <span class="pill"><svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9"/><path d="M6.2 10.3l2.5 2.5 5.1-5.4" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>広告なし</span>
+        </div>
+      </div>
+
+      <div class="hero-phone">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-status"><span>9:41</span></div>
+          <div class="phone-body">
+            <div class="phone-app-row">
+              <span class="phone-app-badge"><svg width="15" height="15"><use href="#helmet-mark"/></svg></span>
+              <span class="phone-app-name">けんせつバディ</span>
+            </div>
+            <div class="phone-headline">期限ダッシュボード・残日数の昇順</div>
+
+            <div class="deadline-row is-danger">
+              <span class="deadline-name">有限会社テスト工業<span class="deadline-type">決算変更届</span></span>
+              <span class="deadline-days">超過</span>
+            </div>
+            <div class="deadline-row is-warning">
+              <span class="deadline-name">株式会社サンプル建設<span class="deadline-type">許可更新</span></span>
+              <span class="deadline-days">残り12日</span>
+            </div>
+            <div class="deadline-row is-warning">
+              <span class="deadline-name">合同会社ケンチク工務店<span class="deadline-type">変更届</span></span>
+              <span class="deadline-days">残り24日</span>
+            </div>
+            <div class="deadline-row is-normal">
+              <span class="deadline-name">サンプル土木株式会社<span class="deadline-type">許可更新</span></span>
+              <span class="deadline-days">残り118日</span>
+            </div>
+
+            <div class="phone-tabbar">
+              <span class="phone-tab">顧客</span>
+              <span class="phone-tab is-active">期限</span>
+              <span class="phone-tab">計算</span>
+              <span class="phone-tab">設定</span>
+            </div>
+          </div>
+          <div class="phone-home-indicator"><span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 目玉機能：期限ダッシュボード ============ -->
+  <section id="highlight">
+    <div class="wrap highlight-inner">
+      <div class="highlight-body">
+        <span class="eyebrow"><span class="dot"></span>目玉機能</span>
+        <h2 class="section-title">「うっかり失効」を、<br>構造的になくす。</h2>
+        <p class="section-lead" style="max-width:40em;margin-left:auto;margin-right:auto;text-align:left">
+          建設業許可の有効期間は5年で、更新申請は満了日の30日前までに行う必要があります。加えて、毎年の決算変更届（事業年度終了後4ヶ月以内）も欠かせません。顧客が増えるほど、この2つの期限をすべて記憶しておくのは現実的ではなくなります。けんせつバディは、許可日と決算日を登録するだけで残り日数を自動計算し、全顧客を横断して残日数の昇順に並べます。
+        </p>
+      </div>
+
+      <div class="rule-table">
+        <div class="rule-card">
+          <div class="rule-name">許可更新</div>
+          <div class="rule-desc">有効期間5年。満了日の30日前までに更新申請。リード日数は上書き可能です。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-name">決算変更届</div>
+          <div class="rule-desc">事業年度終了後4ヶ月以内に毎年提出。提出済みチェックで翌年度分に切り替わります。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-name">変更届</div>
+          <div class="rule-desc">役員・経管・専技などの変更内容と変更日を記録し、30日以内／2週間以内の期限を管理します。</div>
+        </div>
+      </div>
+
+      <div class="legend-row">
+        <span><span class="swatch" style="background:var(--danger)"></span>期限超過（最強調）</span>
+        <span><span class="swatch" style="background:var(--warning)"></span>残り30日以内（強調表示）</span>
+        <span><span class="swatch" style="background:var(--accent)"></span>残り31日以上（通常表示）</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 機能一覧 ============ -->
+  <section id="features">
+    <div class="wrap" style="padding:clamp(64px,9vw,104px) 0">
+      <span class="eyebrow"><span class="dot"></span>機能一覧</span>
+      <h2 class="section-title" style="max-width:680px">4つのタブに、行政書士の実務に必要な7つの機能。</h2>
+      <p class="section-lead" style="max-width:640px">顧客管理から期限管理、費用の見積まで。迷わせない4タブ構成にまとめました。</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-tab-badge">
+            <span class="feature-tab-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8A5F22" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg></span>
+            <span class="feature-tab-label">顧客タブ</span>
+          </div>
+          <h3 class="feature-title">許可事業者の情報を、まとめて管理</h3>
+          <div class="feature-list">
+            <div class="feature-list-item"><div class="fli-name">顧客管理</div><div class="fli-desc">商号・許可番号・知事/大臣の別・許可業種・許可日・決算日などを登録・一覧します。</div></div>
+            <div class="feature-list-item"><div class="fli-name">書類チェック</div><div class="fli-desc">新規・更新・業種追加・決算変更届などの手続ごとに必要書類のチェック状態を、顧客×手続ごとに管理します。</div></div>
+            <div class="feature-list-item"><div class="fli-name">変更事項メモ</div><div class="fli-desc">役員・経営業務管理責任者・専任技術者・営業所などの変更内容と提出期限を記録し、期限タブに反映します。</div></div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-tab-badge">
+            <span class="feature-tab-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#2F6F52" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>
+            <span class="feature-tab-label">期限タブ</span>
+          </div>
+          <h3 class="feature-title">「絶対に落とさない」を、そのまま形に</h3>
+          <div class="feature-list">
+            <div class="feature-list-item"><div class="fli-name">期限ダッシュボード（目玉）</div><div class="fli-desc">全顧客の許可更新・決算変更届・変更届の期限を残日数の昇順で横断一覧します。30日以内は強調、超過は最強調表示です。</div></div>
+            <div class="feature-list-item"><div class="fli-name">手続スケジュール</div><div class="fli-desc">新規申請の標準工程（要件確認〜書類収集〜申請〜許可通知）を基準日から自動作成。標準処理期間（知事約30日・大臣約90日）は上書き可能です。</div></div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-tab-badge">
+            <span class="feature-tab-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8A5F22" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5l2 2 4-4.2"/><rect x="4" y="4.5" width="16" height="15" rx="2.5"/></svg></span>
+            <span class="feature-tab-label">計算タブ</span>
+          </div>
+          <h3 class="feature-title">確認補助と見積を、その場で</h3>
+          <div class="feature-list">
+            <div class="feature-list-item"><div class="fli-name">要件セルフチェック</div><div class="fli-desc">経営業務管理責任者・専任技術者・財産的基礎（一般/特定で項目切替）・欠格要件の確認チェックリストです。<b>許可可否の判定は行いません。</b></div></div>
+            <div class="feature-list-item"><div class="fli-name">法定費用・報酬見積</div><div class="fli-desc">区分別の法定手数料（初期値・全て上書き可）と事務所報酬から見積合計を計算し、テキストで共有できます。</div></div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-tab-badge">
+            <span class="feature-tab-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#2F6F52" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.6"/><path d="M12 3.5v2.4M12 18.1v2.4M20.5 12h-2.4M5.9 12H3.5M17.7 6.3l-1.7 1.7M8 16l-1.7 1.7M17.7 17.7L16 16M8 8 6.3 6.3"/></svg></span>
+            <span class="feature-tab-label">設定タブ</span>
+          </div>
+          <h3 class="feature-title">シンプルな運用管理</h3>
+          <div class="feature-list">
+            <div class="feature-list-item"><div class="fli-name">データ管理</div><div class="fli-desc">端末に保存されたデータを確認・全削除できます。</div></div>
+            <div class="feature-list-item"><div class="fli-name">免責事項・アプリ情報</div><div class="fli-desc">期限・金額・要件チェックに関する免責事項と、アプリの基本情報を確認できます。</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 使い方の流れ ============ -->
+  <section id="flow">
+    <div class="wrap" style="padding:clamp(64px,9vw,100px) 0">
+      <span class="eyebrow"><span class="dot"></span>使い方の流れ</span>
+      <h2 class="section-title">使いはじめは、かんたん3ステップ。</h2>
+
+      <div class="flow-grid">
+        <div class="flow-card">
+          <span class="flow-num">1</span><span class="flow-step-label">STEP</span>
+          <div class="flow-title">顧客を登録</div>
+          <p class="flow-desc">商号・許可日・決算日などを入力します。登録不要で、その場ですぐ使えます。</p>
+        </div>
+        <div class="flow-card">
+          <span class="flow-num">2</span><span class="flow-step-label">STEP</span>
+          <div class="flow-title">期限ダッシュボードを確認</div>
+          <p class="flow-desc">全顧客の許可更新・決算変更届・変更届の残日数を、昇順で一覧できます。</p>
+        </div>
+        <div class="flow-card">
+          <span class="flow-num">3</span><span class="flow-step-label">STEP</span>
+          <div class="flow-title">日々の実務を進める</div>
+          <p class="flow-desc">書類チェック・変更事項メモ・見積作成を、同じアプリの中でそのまま進められます。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 安心してお使いいただけます ============ -->
+  <section id="trust">
+    <div class="wrap trust-inner">
+      <span class="eyebrow"><span class="dot"></span>安心してお使いいただけます</span>
+      <h2 class="section-title" style="max-width:680px">顧客情報を扱うからこそ、外部に出さない設計。</h2>
+      <div class="trust-grid">
+        <div class="trust-card">
+          <span class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A5F22" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="4.5" width="15" height="15" rx="4"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg></span>
+          <span><span class="trust-title">登録不要</span><span class="trust-desc" style="display:block">アカウント作成もログインも不要です。開いてすぐ使えます。</span></span>
+        </div>
+        <div class="trust-card">
+          <span class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A5F22" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10.5" width="12" height="9" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span>
+          <span><span class="trust-title">データは端末内のみ</span><span class="trust-desc" style="display:block">顧客情報・変更事項メモ・提出記録はすべて端末内に保存。外部サーバーへの送信は一切ありません。</span></span>
+        </div>
+        <div class="trust-card">
+          <span class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A5F22" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0Z"/><path d="M4 9h16M4 15h16"/></svg></span>
+          <span><span class="trust-title">オフライン対応</span><span class="trust-desc" style="display:block">すべての機能がオフラインで動作します。通信環境を気にせずお使いいただけます。</span></span>
+        </div>
+        <div class="trust-card">
+          <span class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A5F22" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 4.5 7v5c0 5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.5 7.5-9.5V7z"/></svg></span>
+          <span><span class="trust-title">広告なし</span><span class="trust-desc" style="display:block">広告表示やアクセス解析はありません。業務ツールとしてシンプルに使えます。</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section id="faq">
+    <div class="wrap faq-inner">
+      <span class="eyebrow"><span class="dot"></span>よくある質問</span>
+      <h2 class="section-title">気になることに、先にお答えします。</h2>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary><span class="faq-q">Q</span><span class="faq-text">顧客に配布するアプリですか?</span><span class="faq-chev">▾</span></summary>
+          <p class="faq-a">いいえ。けんせつバディは、行政書士の先生ご自身が事務所で使う業務ツールです。顧客への配布機能はありません。</p>
+        </details>
+        <details class="faq-item">
+          <summary><span class="faq-q">Q</span><span class="faq-text">顧客のデータはどこに保存されますか?</span><span class="faq-chev">▾</span></summary>
+          <p class="faq-a">すべてお使いのiPhone内に保存されます。開発者のサーバーへ送信されることはありません。</p>
+        </details>
+        <details class="faq-item">
+          <summary><span class="faq-q">Q</span><span class="faq-text">期限の判定や許可の可否を自動で判断してくれますか?</span><span class="faq-chev">▾</span></summary>
+          <p class="faq-a">いいえ。表示される期限・金額・要件チェックはあくまで参考情報・確認補助です。許可の可否を判定する機能ではありません。最終判断は必ず最新の手引・申請先行政庁にご確認ください。</p>
+        </details>
+        <details class="faq-item">
+          <summary><span class="faq-q">Q</span><span class="faq-text">電波のない場所でも使えますか?</span><span class="faq-chev">▾</span></summary>
+          <p class="faq-a">使えます。すべての機能がオフラインで動作します。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ダウンロード ============ -->
+  <section id="download">
+    <div class="wrap">
+      <div class="download-card">
+        <h2 class="section-title" style="margin:0">App Storeで、近日公開。</h2>
+        <p>iOS版の公開準備を進めています。登録不要で、公開後すぐにお使いいただけます。</p>
+        <div class="download-cta">
+          <span class="cta-btn cta-disabled" style="background:#241C12" role="img" aria-label="App Store 近日公開">
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none"><path d="M12 3.5v11M12 14.5l-4.5-4.5M12 14.5l4.5-4.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 17v2.5h15V17" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="cta-lines">
+              <span class="cta-small">App Storeで</span>
+              <span class="cta-big">近日公開</span>
+            </span>
+          </span>
+        </div>
+        <div class="download-pill-row">
+          <span class="download-pill">登録不要</span>
+          <span class="download-pill">データは端末内のみ</span>
+          <span class="download-pill">オフライン対応</span>
+          <span class="download-pill">広告なし</span>
+        </div>
+        <p class="download-fine">※公開時期は変更になる場合があります。</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ フッター ============ -->
+<footer class="site-footer" id="footer-disclaimer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-row">
+          <span class="footer-badge"><svg width="17" height="17"><use href="#helmet-mark"/></svg></span>
+          <span class="footer-ja">けんせつバディ</span>
+        </div>
+        <p class="footer-tagline">5年更新と毎年の決算変更届を、顧客横断で絶対に落とさない。</p>
+      </div>
+      <div class="footer-links">
+        <a class="footer-link" href="privacy.html">プライバシーポリシー</a>
+        <a class="footer-link" href="support.html">サポート</a>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      <div class="fd-title">免責事項</div>
+      <p>本アプリの期限・金額は参考値です。法令・手数料は改正されている可能性があるため、必ず最新の手引・申請先行政庁の案内をご確認ください。</p>
+      <p>本アプリは許可の可否・要件充足の判定を行うものではありません。要件セルフチェックは確認の補助であり、正式な判断は必ず専門家・行政庁にご確認のうえ行ってください。</p>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 けんせつバディ</span>
+      <span>iOS版 準備中・日本語対応</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
